@@ -2,47 +2,55 @@ const express = require("express");
 
 const app = express();
 
-// Render provides PORT automatically
 const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
   res.send(`
     <!DOCTYPE html>
-    <html>
+    <html lang="en">
     <head>
-      <title>Verification</title>
       <meta charset="UTF-8">
-      <meta http-equiv="refresh" content="3;url=https://tyfmegaoke.com/audio-tools/megaoke/index.html">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <title>Verification</title>
 
       <style>
-        body{
+        *{
           margin:0;
-          height:100vh;
-          display:flex;
-          justify-content:center;
-          align-items:center;
-          flex-direction:column;
-          background:#000;
-          color:#fff;
-          font-family:Arial,sans-serif;
+          padding:0;
+          box-sizing:border-box;
         }
 
-        h1{
-          margin-bottom:10px;
+        body{
+          width:100%;
+          height:100vh;
+          overflow:hidden;
+          background:#000;
+        }
+
+        iframe{
+          width:100%;
+          height:100vh;
+          border:none;
         }
       </style>
     </head>
 
     <body>
-      <h1>Verification Success</h1>
-      <p>Redirecting in 3 seconds...</p>
+
+      <!-- Load first website -->
+      <iframe
+        src="https://tyfmegaoke.com/audio-tools/megaoke/index.html">
+      </iframe>
 
       <script>
+        // Wait 5 seconds then redirect
         setTimeout(() => {
           window.location.href =
-            "https://tyfmegaoke.com/audio-tools/megaoke/mobile.html";
-        }, 3000);
+          "https://tyfmegaoke.com/audio-tools/megaoke/mobile.html";
+        }, 5000);
       </script>
+
     </body>
     </html>
   `);

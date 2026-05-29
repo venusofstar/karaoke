@@ -12,8 +12,6 @@ app.get("/", (req, res) => {
     path: "/audio-tools/megaoke/mobile.html",
     method: "GET",
     headers: {
-
-      // Custom headers
       "Referer":
         "https://tyfmegaoke.com/audio-tools/megaoke/index.html",
 
@@ -22,7 +20,6 @@ app.get("/", (req, res) => {
 
       "User-Agent":
         "Mozilla/5.0"
-
     }
   };
 
@@ -36,7 +33,6 @@ app.get("/", (req, res) => {
 
     response.on("end", () => {
 
-      // Inject proxied content into iframe
       res.send(`
 <!DOCTYPE html>
 <html lang="en">
@@ -70,6 +66,8 @@ iframe{
   border:none;
 }
 
+/* LOADING OVERLAY */
+
 #loading{
   position:fixed;
   top:0;
@@ -81,8 +79,9 @@ iframe{
   justify-content:center;
   align-items:center;
   flex-direction:column;
-  z-index:9999;
+  z-index:99999;
   color:#fff;
+  transition:opacity .5s ease;
 }
 
 .loader{
@@ -99,6 +98,11 @@ iframe{
   100%{
     transform:rotate(360deg);
   }
+}
+
+.hidden{
+  opacity:0;
+  pointer-events:none;
 }
 
 </style>
@@ -118,6 +122,9 @@ iframe{
 const iframe =
 document.getElementById("frame");
 
+const loading =
+document.getElementById("loading");
+
 // Inject proxied HTML
 iframe.srcdoc = \`
 ${html
@@ -125,13 +132,16 @@ ${html
   .replace(/\$/g, "\\$")}
 \`;
 
-// Hide loading after 5 sec
-setTimeout(() => {
+// Hide loading when iframe fully loads
+iframe.onload = () => {
 
-  document.getElementById("loading")
-    .style.display = "none";
+  loading.classList.add("hidden");
 
-}, 5000);
+  setTimeout(() => {
+    loading.style.display = "none";
+  }, 500);
+
+};
 
 </script>
 

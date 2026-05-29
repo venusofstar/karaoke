@@ -5,7 +5,6 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-// Proxy mobile.html using custom headers
 app.get("/", (req, res) => {
 
   const options = {
@@ -13,6 +12,8 @@ app.get("/", (req, res) => {
     path: "/audio-tools/megaoke/mobile.html",
     method: "GET",
     headers: {
+
+      // Custom headers
       "Referer":
         "https://tyfmegaoke.com/audio-tools/megaoke/index.html",
 
@@ -21,116 +22,121 @@ app.get("/", (req, res) => {
 
       "User-Agent":
         "Mozilla/5.0"
+
     }
   };
 
   const proxy = https.request(options, (response) => {
 
-    let data = "";
+    let html = "";
 
     response.on("data", (chunk) => {
-      data += chunk;
+      html += chunk;
     });
 
     response.on("end", () => {
 
-      // Show loading screen first
+      // Inject proxied content into iframe
       res.send(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
-          <title>Loading...</title>
+<title>Loading...</title>
 
-          <style>
-            *{
-              margin:0;
-              padding:0;
-              box-sizing:border-box;
-            }
+<style>
 
-            body{
-              overflow:hidden;
-              background:#000;
-            }
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
 
-            iframe{
-              position:fixed;
-              top:0;
-              left:0;
-              width:100%;
-              height:100vh;
-              border:none;
-            }
+body{
+  overflow:hidden;
+  background:#000;
+  font-family:Arial,sans-serif;
+}
 
-            #loading{
-              position:fixed;
-              top:0;
-              left:0;
-              width:100%;
-              height:100vh;
-              background:#000;
-              display:flex;
-              justify-content:center;
-              align-items:center;
-              flex-direction:column;
-              z-index:9999;
-              color:#fff;
-              font-family:Arial,sans-serif;
-            }
+iframe{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100vh;
+  border:none;
+}
 
-            .loader{
-              width:60px;
-              height:60px;
-              border:6px solid #333;
-              border-top:6px solid #fff;
-              border-radius:50%;
-              animation:spin 1s linear infinite;
-              margin-bottom:20px;
-            }
+#loading{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100vh;
+  background:#000;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  z-index:9999;
+  color:#fff;
+}
 
-            @keyframes spin{
-              100%{
-                transform:rotate(360deg);
-              }
-            }
-          </style>
-        </head>
+.loader{
+  width:65px;
+  height:65px;
+  border:6px solid #333;
+  border-top:6px solid #fff;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  margin-bottom:20px;
+}
 
-        <body>
+@keyframes spin{
+  100%{
+    transform:rotate(360deg);
+  }
+}
 
-          <iframe id="frame"></iframe>
+</style>
+</head>
 
-          <div id="loading">
-            <div class="loader"></div>
-            <h2>Loading...</h2>
-          </div>
+<body>
 
-          <script>
+<iframe id="frame"></iframe>
 
-            // Inject proxied page
-            const html = \`${data
-              .replace(/`/g, "\\`")
-              .replace(/\$/g, "\\$")}\`;
+<div id="loading">
+  <div class="loader"></div>
+  <h2>Loading...</h2>
+</div>
 
-            const iframe =
-              document.getElementById("frame");
+<script>
 
-            iframe.srcdoc = html;
+const iframe =
+document.getElementById("frame");
 
-            // Hide loading after 5 sec
-            setTimeout(() => {
-              document.getElementById("loading")
-                .style.display = "none";
-            }, 5000);
+// Inject proxied HTML
+iframe.srcdoc = \`
+${html
+  .replace(/`/g, "\\`")
+  .replace(/\$/g, "\\$")}
+\`;
 
-          </script>
+// Hide loading after 5 sec
+setTimeout(() => {
 
-        </body>
-        </html>
+  document.getElementById("loading")
+    .style.display = "none";
+
+}, 5000);
+
+</script>
+
+</body>
+</html>
       `);
 
     });

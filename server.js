@@ -1,22 +1,19 @@
-// server.js
 const express = require("express");
-const path = require("path");
 
 const app = express();
-const PORT = 3000;
 
-// Serve static files
-app.use(express.static(__dirname));
+// Render provides PORT automatically
+const PORT = process.env.PORT || 3000;
 
-// Verification route
 app.get("/", (req, res) => {
   res.send(`
     <!DOCTYPE html>
     <html>
     <head>
       <title>Verification</title>
-      <meta charset="UTF-8" />
-      <meta http-equiv="refresh" content="3;url=https://tyfmegaoke.com/audio-tools/megaoke/mobile.html">
+      <meta charset="UTF-8">
+      <meta http-equiv="refresh" content="3;url=https://tyfmegaoke.com/audio-tools/megaoke/index.html">
+
       <style>
         body{
           margin:0;
@@ -24,22 +21,18 @@ app.get("/", (req, res) => {
           display:flex;
           justify-content:center;
           align-items:center;
+          flex-direction:column;
           background:#000;
           color:#fff;
           font-family:Arial,sans-serif;
-          flex-direction:column;
         }
 
         h1{
-          font-size:28px;
           margin-bottom:10px;
-        }
-
-        p{
-          opacity:.8;
         }
       </style>
     </head>
+
     <body>
       <h1>Verification Success</h1>
       <p>Redirecting in 3 seconds...</p>
@@ -56,5 +49,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(\`Server running at http://localhost:\${PORT}\`);
+  console.log("Server running on port " + PORT);
 });
